@@ -41,7 +41,8 @@
           "trailing_diamond": " ",
           "template": " {{ if .Icon }}{{ .Icon }}{{ else }}🐧{{ end }} ",
           "foreground": "p:dark",
-          "background": "p:purple"
+          "background": "p:purple",
+          "min_width": 50
         },
         {
           "type": "session",

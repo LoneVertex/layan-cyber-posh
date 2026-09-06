@@ -33,6 +33,7 @@ blocks:
           background: p:purple
           type: os
           style: diamond
+          min_width: 50
         - leading_diamond: 
           trailing_diamond: ' '
           template: " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\U000F08B9 {{ end }}{{ if .UserName }}{{ .UserName }}{{ else }}user{{ end }}@{{ .HostName }} "

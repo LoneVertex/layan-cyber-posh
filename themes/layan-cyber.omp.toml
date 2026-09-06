@@ -37,6 +37,7 @@ final_space = true
     background = 'p:purple'
     type = 'os'
     style = 'diamond'
+    min_width = 50
 
   [[blocks.segments]]
     leading_diamond = ''
