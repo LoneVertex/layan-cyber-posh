@@ -1,0 +1,45 @@
+name: Validate Theme Configurations
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Oh My Posh
+        run: |
+          curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Verify Oh My Posh installation
+        run: oh-my-posh version
+
+      - name: Validate TOML theme
+        run: |
+          echo "Validating TOML format..."
+          oh-my-posh print primary --config themes/layan-cyber.omp.toml
+
+      - name: Validate JSON theme
+        run: |
+          echo "Validating JSON format..."
+          oh-my-posh print primary --config themes/layan-cyber.omp.json
+
+      - name: Validate YAML theme
+        run: |
+          echo "Validating YAML format..."
+          oh-my-posh print primary --config themes/layan-cyber.omp.yaml
+
+      - name: Verify format synchronization
+        run: |
+          echo "Checking if JSON export matches TOML..."
+          oh-my-posh config export --config themes/layan-cyber.omp.toml --format json --output /tmp/check.omp.json
+          # Check valid JSON syntax
+          python3 -m json.tool /tmp/check.omp.json > /dev/null

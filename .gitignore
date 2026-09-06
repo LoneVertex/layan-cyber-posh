@@ -1,0 +1,23 @@
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Secrets & Credentials
+.env*
+*.secret
+*.pem
+*.key
+*.p12
+id_rsa*
+secrets/
+credentials/
+
+# Temporary / Scratch files
+tmp/
+*.tmp
+*.log
