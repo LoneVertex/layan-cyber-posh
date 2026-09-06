@@ -24,3 +24,4 @@ tmp/
 .agents/
 ORIGINAL_REQUEST.md
 PROJECT.md
+.cache/

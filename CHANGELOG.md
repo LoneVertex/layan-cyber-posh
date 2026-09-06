@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-09-06
+
+### Fixed (Critical)
+- **DEF-01 (P0) Git Status Muting Regression:** Re-introduced `fetch_status: true` and `fetch_upstream: true` into git segment options. Pass 2 had stripped these to satisfy a schema validation CI badge, causing the Oh My Posh Go runtime (v29.24.0) to silently default `fetch_status` to `false` — permanently rendering dirty repos, staged changes, and merge conflicts as clean yellow. Core theme functionality is fully restored.
+- **DEF-02 (P1) Rust Segment Permanently Dead:** Changed `fetch_version: false` → `true` on the Rust segment. The combination of `fetch_version: false` and `{{ if .Full }}` caused `.Full` to always be empty, silencing the Rust capsule even when `rustc` is installed and `Cargo.toml` is present.
+- **DEF-04 (P2) Dangling `@` in Session Segment:** Wrapped `@{{ .HostName }}` in `{{ if .HostName }}` guard — empty `HostName` in containers or chroot environments no longer produces a trailing `@` artefact.
+- **DEF-05 (P2) Python Phantom Capsule:** Changed Python template to `{{ if or .Error .Venv }}` outer guard, eliminating the empty icon-only capsule emitted when neither `.Venv` nor `.Error` are set.
+- **DEF-09 (P2) W=65 Dirty-Git Line Wrap:** Raised session segment `min_width` from 65 to 75. At exactly 65 columns, a dirty git status expanded the prompt past the threshold, causing a 3-line wrap. Empirically verified clean collapse across widths 40–140.
+- **DEF-11 (P2) Stale Installer VERSION:** Corrected `VERSION="1.2.0"` to `VERSION="1.3.0"` in `install.sh`.
+
+### Fixed (Template Logic)
+- **DEF-03 (P2) Rebase Truncation Slicing:** Git template now uses `{{ if .Rebase }}{{ .HEAD }}{{ else }}{{ trunc 20 .HEAD }}{{ end }}` — active rebase messages are displayed in full instead of being sliced mid-word.
+
+### Added
+- **DEF-06 (P1) Nushell Integration:** `install.sh` now prints Nushell (`nu`) shell integration hints with the safe `$env.CMD_DURATION_MS = '0823'` initialization guard, preventing runtime crashes in clean Nushell sessions.
+- **DEF-07 (P1) Installer Hardening:** `install.sh` now handles unset `HOME` safely under `set -u` via `getent`/`id` fallback, resolves symlinks correctly, uses atomic temp-file staging for downloads with empty-file validation, validates positional argument count, and correctly rejects empty directory arguments.
+- **DEF-08 (P1) CI Hardening — 15-Stage Workflow:**
+  - Viewport check now strips ANSI codes and calculates true Unicode display width (vs raw byte length). Line 1 (prompt line) is now checked too.
+  - Latency gate upgraded from brittle mean-only to robust P50/P95/P99 percentile gates (≤20ms/35ms/50ms).
+  - Added: `shellcheck` stage for `install.sh` (0 warnings enforced).
+  - Added: transient prompt error-code matrix test (status 0, 1, 130).
+  - Added: right-prompt threshold verification (below/above 2000ms execution time).
+  - Added: Nushell (`nu`) shell initialization test.
+  - Added: `oh-my-posh debug` output verification.
+  - Added: installer test suite (custom path with spaces, uninstall, invalid flags).
+  - Schema validation now uses `Draft202012Validator.iter_errors` with surgical tolerance for the documented upstream omission of `fetch_status`/`fetch_upstream`.
+- **Git `min_width: 48`:** Git segment now hides automatically below 48 columns, preventing the git capsule from contributing to narrow-terminal line overflow.
+- **SPECIFICATION-v2.md:** 1,838-line master adversarial audit specification (Pass 3) — complete defect catalog DEF-01 through DEF-14 with reproduction steps, WCAG contrast matrix, performance profiling across 15 scenarios, and all 5 runnable implementation blueprints.
+
 ## [1.3.0] - 2026-09-06
 
 ### Fixed

@@ -36,19 +36,19 @@ blocks:
           min_width: 50
         - leading_diamond: 
           trailing_diamond: ' '
-          template: " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\U000F08B9 {{ end }}{{ if .UserName }}{{ .UserName }}{{ else }}user{{ end }}@{{ .HostName }} "
+          template: " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\U000F08B9 {{ end }}{{ if .UserName }}{{ .UserName }}{{ else }}user{{ end }}{{ if .HostName }}@{{ .HostName }}{{ end }} "
           foreground: p:dark
           type: session
           style: diamond
           background_templates:
             - '{{ if .Root }}p:red{{ end }}'
             - p:cyan
-          min_width: 65
+          min_width: 75
         - options:
             style: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: " \U0001F4C1 {{ .Path }}{{ if not .Writable }} {{ end }} "
+          template: " \U0001F4C1 {{ .Path }}{{ if not .Writable }}  {{ end }} "
           foreground: p:dark
           background: p:green
           type: path
@@ -58,14 +58,16 @@ blocks:
             branch_behind_icon: ↓
             branch_gone_icon: ≢
             branch_identical_icon: ≡
-            commit_icon: ' '
+            commit_icon: ' '
+            fetch_status: true
+            fetch_upstream: true
             rebase_icon: ' '
           cache:
             duration: 5m
             strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: ' {{ if .HEAD }}{{ trunc 20 .HEAD }}{{ end }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
+          template: ' {{ if .HEAD }}{{ if .Rebase }}{{ .HEAD }}{{ else }}{{ trunc 20 .HEAD }}{{ end }}{{ end }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
           foreground: p:dark
           background: p:yellow
           type: git
@@ -76,6 +78,7 @@ blocks:
             - '{{ if or (.Working.Changed) (.Staging.Changed) }}p:orange{{ end }}'
             - '{{ if gt .Behind 0 }}p:orange{{ end }}'
             - '{{ if gt .Ahead 0 }}p:purple{{ end }}'
+          min_width: 48
       newline: true
     - type: rprompt
       overflow: hide
@@ -89,7 +92,7 @@ blocks:
             strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '  {{ .Full }} '
+          template: '  {{ .Full }} '
           foreground: p:green
           background: p:grey
           type: node
@@ -104,21 +107,21 @@ blocks:
             strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
+          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
           foreground: p:cyan
           background: p:grey
           type: go
           style: diamond
         - options:
             display_mode: files
-            fetch_version: false
+            fetch_version: true
             home_enabled: false
           cache:
             duration: 10m
             strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
+          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
           foreground: p:orange
           background: p:grey
           type: rust
@@ -132,7 +135,7 @@ blocks:
             strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} '
+          template: '{{ if or .Error .Venv }}  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} {{ end }}'
           foreground: p:yellow
           background: p:grey
           type: python
