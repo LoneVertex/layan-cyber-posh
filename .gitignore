@@ -21,3 +21,6 @@ credentials/
 tmp/
 *.tmp
 *.log
+.agents/
+ORIGINAL_REQUEST.md
+PROJECT.md

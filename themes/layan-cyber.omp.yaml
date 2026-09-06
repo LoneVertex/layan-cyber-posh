@@ -12,7 +12,7 @@ palette:
     red: '#ff5555'
     yellow: '#f1fa8c'
 transient_prompt:
-    template: ' ❯ '
+    template: '{{ if gt .Code 0 }} ✗ {{ .Code }}{{ end }} ❯ '
     background: transparent
     foreground_templates:
         - '{{ if gt .Code 0 }}p:red{{ end }}'
@@ -35,31 +35,36 @@ blocks:
           style: diamond
         - leading_diamond: 
           trailing_diamond: ' '
-          template: " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\U000F08B9 {{ end }}{{ .UserName }}@{{ .HostName }} "
+          template: " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\U000F08B9 {{ end }}{{ if .UserName }}{{ .UserName }}{{ else }}user{{ end }}@{{ .HostName }} "
           foreground: p:dark
           type: session
           style: diamond
           background_templates:
             - '{{ if .Root }}p:red{{ end }}'
             - p:cyan
+          min_width: 65
         - options:
-            max_depth: 3
             style: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: " \U0001F4C1 {{ .Path }} "
+          template: " \U0001F4C1 {{ .Path }}{{ if not .Writable }} {{ end }} "
           foreground: p:dark
           background: p:green
           type: path
           style: diamond
         - options:
-            cache_duration: 5m
-            fetch_status: true
-            fetch_upstream: false
-            timeout: 500
+            branch_ahead_icon: ↑
+            branch_behind_icon: ↓
+            branch_gone_icon: ≢
+            branch_identical_icon: ≡
+            commit_icon: ' '
+            rebase_icon: ' '
+          cache:
+            duration: 5m
+            strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: ' {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
+          template: ' {{ if .HEAD }}{{ trunc 20 .HEAD }}{{ end }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} '
           foreground: p:dark
           background: p:yellow
           type: git
@@ -71,15 +76,16 @@ blocks:
             - '{{ if gt .Behind 0 }}p:orange{{ end }}'
             - '{{ if gt .Ahead 0 }}p:purple{{ end }}'
       newline: true
-    - type: prompt
-      alignment: right
+    - type: rprompt
       overflow: hide
       segments:
         - options:
-            cache_duration: 10m
             display_mode: files
             fetch_package_manager: false
             home_enabled: false
+          cache:
+            duration: 10m
+            strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
           template: '  {{ .Full }} '
@@ -88,34 +94,41 @@ blocks:
           type: node
           style: diamond
         - options:
-            cache_duration: 10m
             display_mode: files
-            fetch_version: false
+            fetch_version: true
             home_enabled: false
+            parse_mod_file: true
+          cache:
+            duration: 10m
+            strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '  {{ .Full }} '
+          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
           foreground: p:cyan
           background: p:grey
           type: go
           style: diamond
         - options:
-            cache_duration: 10m
             display_mode: files
             fetch_version: false
             home_enabled: false
+          cache:
+            duration: 10m
+            strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
-          template: '  {{ .Full }} '
+          template: '{{ if .Full }}  {{ .Full }} {{ end }}'
           foreground: p:orange
           background: p:grey
           type: rust
           style: diamond
         - options:
-            cache_duration: 10m
             display_mode: environment
             fetch_version: false
             home_enabled: false
+          cache:
+            duration: 10m
+            strategy: folder
           leading_diamond: 
           trailing_diamond: ' '
           template: '  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} '

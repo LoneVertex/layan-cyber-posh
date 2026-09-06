@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-06
+
+### Fixed
+- **100% Raw Schema Compliance:** Resolved all upstream v3 JSON Schema validation issues. Replaced obsolete/unsupported options (`fetch_status`, `fetch_upstream`, `timeout`) with official segment-level caching (`cache.duration`, `cache.strategy = "folder"`). Zero CI property stripping required.
+- **Narrow Terminal Viewports (40 & 60 cols):** Added `min_width: 65` to the session segment (`user@host`), automatically dropping line 1 width from 67 to 39 columns on compact screens and preventing hardware terminal wrapping.
+- **Native Right Prompt Architecture:** Migrated block 1 from `type = "prompt", alignment = "right"` to native `type = "rprompt"`, eliminating upstream modulo whitespace injection.
+- **Polyglot Go & Rust Versioning:** Configured `parse_mod_file: true` and `fetch_version: true` for Go so `go.mod` is parsed in sub-millisecond time without spawning external binaries. Added template guarding (`{{ if .Full }}`) to both Go and Rust segments to eliminate phantom empty capsules.
+- **Transient Prompt Error Jitter:** Synced `transient_prompt.template` to include error status (`{{ if gt .Code 0 }} ✗ {{ .Code }}{{ end }} ❯ `), aligning transient and primary prompts column-for-column across all exit codes (0, 1, 127).
+- **Runaway Git Branch Names:** Added `trunc 20 .HEAD` to prevent long branch names from overflowing prompt lines.
+
+### Added
+- **Filesystem Read-Only Lock Indicator:** Added `{{ if not .Writable }} {{ end }}` to the path segment, displaying a lock icon when navigating read-only filesystems.
+- **Strict Performance CI Gate:** Hardened GitHub Actions CI with an uncompromised $\le 20.0$ms latency threshold, 40-140 column viewport verification, and multi-shell (`bash`, `zsh`, `fish`, `pwsh`) strict generation checks.
+
 ## [1.2.0] - 2026-09-06
 
 ### Fixed

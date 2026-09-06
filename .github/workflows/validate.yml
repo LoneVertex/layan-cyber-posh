@@ -23,22 +23,16 @@ jobs:
       - name: Verify Oh My Posh installation
         run: oh-my-posh version
 
-      - name: Validate TOML theme renders
+      - name: Validate Theme Rendering (JSON, YAML, TOML)
         run: |
-          echo "Validating TOML format…"
+          echo "Testing JSON rendering..."
+          oh-my-posh print primary --config themes/layan-cyber.omp.json --plain
+          echo "Testing YAML rendering..."
+          oh-my-posh print primary --config themes/layan-cyber.omp.yaml --plain
+          echo "Testing TOML rendering..."
           oh-my-posh print primary --config themes/layan-cyber.omp.toml --plain
 
-      - name: Validate JSON theme renders
-        run: |
-          echo "Validating JSON format…"
-          oh-my-posh print primary --config themes/layan-cyber.omp.json --plain
-
-      - name: Validate YAML theme renders
-        run: |
-          echo "Validating YAML format…"
-          oh-my-posh print primary --config themes/layan-cyber.omp.yaml --plain
-
-      - name: Validate JSON schema compliance
+      - name: Strict Upstream v3 JSON Schema Compliance (Unmodified)
         run: |
           pip install jsonschema --quiet
           python3 - << 'EOF'
@@ -50,70 +44,89 @@ jobs:
           with open("themes/layan-cyber.omp.json") as f:
               theme = json.load(f)
 
-          KNOWN_RUNTIME_PROPS = {"fetch_status", "fetch_upstream", "fetch_stash",
-                                  "fetch_worktree", "cache_duration", "timeout"}
-          for block in theme.get("blocks", []):
-              for seg in block.get("segments", []):
-                  opts = seg.get("options", {})
-                  for key in KNOWN_RUNTIME_PROPS:
-                      opts.pop(key, None)
-
+          # Validate RAW theme file directly without stripping any keys
           try:
               jsonschema.validate(instance=theme, schema=schema)
-              print("✔  Schema validation passed — 100% compliant with Oh My Posh v3 specification.")
+              print("✔  100% Validated against official upstream Oh My Posh v3 JSON Schema!")
           except jsonschema.ValidationError as e:
-              print(f"✗  Schema validation failed: {e.message}", file=sys.stderr)
+              print(f"✗  Schema validation failed at path {list(e.path)}: {e.message}", file=sys.stderr)
               sys.exit(1)
           EOF
 
-      - name: Verify format synchronization
+      - name: Multi-Shell Script Generation Verification
         run: |
-          echo "Verifying JSON export matches canonical TOML…"
-          oh-my-posh config export --config themes/layan-cyber.omp.toml --format json --output /tmp/check.omp.json
-          diff -u themes/layan-cyber.omp.json /tmp/check.omp.json
-          echo "✔  JSON format is 100% synchronized."
+          for shell in bash zsh fish pwsh; do
+            echo "Testing init generation for $shell..."
+            oh-my-posh init $shell --config themes/layan-cyber.omp.json --print --strict > /dev/null
+          done
+          echo "✔  All shell initialization scripts generated cleanly with 0 warnings."
 
-          echo "Verifying YAML export matches canonical TOML…"
-          oh-my-posh config export --config themes/layan-cyber.omp.toml --format yaml --output /tmp/check.omp.yaml
-          diff -u themes/layan-cyber.omp.yaml /tmp/check.omp.yaml
-          echo "✔  YAML format is 100% synchronized."
-
-      - name: Narrow terminal overflow test
+      - name: Verify Native Right Prompt Architecture
         run: |
-          echo "Testing prompt at 60 columns (right-prompt must not wrap)…"
-          OUTPUT=$(oh-my-posh print primary --config themes/layan-cyber.omp.toml --plain --terminal-width 60)
-          LINES=$(echo "$OUTPUT" | wc -l)
-          echo "Lines of output: $LINES"
-          if [ "$LINES" -gt 2 ]; then
-            echo "✗  Prompt broke into more than 2 lines at 60 cols!" >&2
+          echo "Verifying right prompt output..."
+          RPROMPT=$(oh-my-posh print right --config themes/layan-cyber.omp.json --execution-time 3000 --plain)
+          if [ -z "$RPROMPT" ]; then
+            echo "✗  Right prompt returned empty string when active!" >&2
             exit 1
           fi
-          echo "✔  Narrow-terminal overflow OK."
+          echo "✔  Native right prompt emitted: $RPROMPT"
 
-      - name: Performance latency check
+      - name: Narrow Viewport Layout Verification (40, 60, 80, 100, 140 cols)
         run: |
-          echo "Benchmarking prompt render time…"
           python3 - << 'EOF'
-          import subprocess, re, sys
+          import subprocess, sys, re
 
-          result = subprocess.run(
-              ["oh-my-posh", "debug", "--config", "themes/layan-cyber.omp.toml"],
-              capture_output=True, text=True
-          )
-          clean = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
-          match = re.search(r"Run duration:\s*([\d.]+)", clean)
-          if match:
-              ms = float(match.group(1))
-              print(f"Prompt render time: {ms:.1f} ms")
-              if ms > 50:
-                  print(f"✗  Prompt render time {ms:.1f}ms exceeds 50ms budget!", file=sys.stderr)
+          for w in [40, 60, 80, 100, 140]:
+              out = subprocess.run(
+                  ["oh-my-posh", "print", "primary", "--config", "themes/layan-cyber.omp.json", "--plain", "--terminal-width", str(w), "--execution-time", "3000"],
+                  capture_output=True, text=True
+              ).stdout
+              lines = out.strip().split("\n")
+              if len(lines) > 2:
+                  print(f"✗  Layout wrapped to {len(lines)} rows at width {w}!", file=sys.stderr)
                   sys.exit(1)
-              print("✔  Latency within budget.")
-          else:
-              print("⚠  Could not parse execution time — skipping latency gate.")
+              for line in lines[:-1]:
+                  if len(line) > w:
+                      print(f"✗  Physical line length {len(line)} exceeds terminal width {w}!", file=sys.stderr)
+                      sys.exit(1)
+          print("✔  Narrow viewport layout verified across 40, 60, 80, 100, and 140 columns.")
           EOF
 
-      - name: Validate installer script
+      - name: Strict Performance Latency Gate (<= 20.0 ms)
+        run: |
+          python3 - << 'EOF'
+          import subprocess, time, sys
+
+          for _ in range(5):
+              subprocess.run(["oh-my-posh", "print", "primary", "--config", "themes/layan-cyber.omp.json"], capture_output=True)
+
+          durations = []
+          for _ in range(30):
+              t0 = time.perf_counter_ns()
+              subprocess.run(["oh-my-posh", "print", "primary", "--config", "themes/layan-cyber.omp.json"], capture_output=True)
+              durations.append((time.perf_counter_ns() - t0) / 1e6)
+
+          mean_ms = sum(durations) / len(durations)
+          print(f"Latency: Mean = {mean_ms:.2f}ms")
+          if mean_ms > 20.0:
+              print(f"✗  Mean latency {mean_ms:.2f}ms strictly breaches 20.0ms budget!", file=sys.stderr)
+              sys.exit(1)
+          print("✔  Strict performance latency gate passed (<= 20.0ms).")
+          EOF
+
+      - name: Multi-Format Bidirectional Synchronization Check
+        run: |
+          echo "Verifying YAML export matches canonical JSON..."
+          oh-my-posh config export --config themes/layan-cyber.omp.json --format yaml --output /tmp/check.yaml
+          diff -u themes/layan-cyber.omp.yaml /tmp/check.yaml
+          echo "✔  YAML is 100% synchronized."
+
+          echo "Verifying TOML export matches canonical JSON..."
+          oh-my-posh config export --config themes/layan-cyber.omp.json --format toml --output /tmp/check.toml
+          diff -u themes/layan-cyber.omp.toml /tmp/check.toml
+          echo "✔  TOML is 100% synchronized."
+
+      - name: Validate Installer Script
         run: |
           echo "Checking install.sh POSIX syntax…"
           sh -n install.sh
