@@ -16,6 +16,7 @@ jobs:
 
       - name: Install Oh My Posh
         run: |
+          mkdir -p "$HOME/.local/bin"
           curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
