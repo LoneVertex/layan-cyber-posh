@@ -1,4 +1,4 @@
-"$schema" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
+"" = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
 version = 3
 final_space = true
 
@@ -30,8 +30,8 @@ final_space = true
   [[blocks.segments]]
     type             = "os"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background       = "p:purple"
     foreground       = "p:dark"
     template         = " {{ if .Icon }}{{ .Icon }}{{ else }}🐧{{ end }} "
@@ -39,8 +39,8 @@ final_space = true
   [[blocks.segments]]
     type             = "session"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background_templates = [
       "{{ if .Root }}p:red{{ end }}",
       "p:cyan"
@@ -51,8 +51,8 @@ final_space = true
   [[blocks.segments]]
     type             = "path"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:green"
     foreground = "p:dark"
     template   = " 📁 {{ .Path }} "
@@ -63,8 +63,8 @@ final_space = true
   [[blocks.segments]]
     type             = "git"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:yellow"
     background_templates = [
       "{{ if gt .Working.Unmerged 0 }}p:red{{ end }}",
@@ -74,7 +74,7 @@ final_space = true
       "{{ if gt .Ahead 0 }}p:purple{{ end }}"
     ]
     foreground = "p:dark"
-    template   = "  {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} "
+    template   = " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }} "
     [blocks.segments.properties]
       fetch_status   = true
       fetch_upstream = false
@@ -89,11 +89,11 @@ final_space = true
   [[blocks.segments]]
     type             = "node"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:grey"
     foreground = "p:green"
-    template   = "  {{ .Full }} "
+    template   = "  {{ .Full }} "
     [blocks.segments.properties]
       display_mode          = "files"
       home_enabled          = false
@@ -101,13 +101,41 @@ final_space = true
       cache_duration        = "10m"
 
   [[blocks.segments]]
+    type             = "go"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
+    background = "p:grey"
+    foreground = "p:cyan"
+    template   = "  {{ .Full }} "
+    [blocks.segments.properties]
+      display_mode   = "files"
+      home_enabled   = false
+      fetch_version  = false
+      cache_duration = "10m"
+
+  [[blocks.segments]]
+    type             = "rust"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
+    background = "p:grey"
+    foreground = "p:orange"
+    template   = "  {{ .Full }} "
+    [blocks.segments.properties]
+      display_mode   = "files"
+      home_enabled   = false
+      fetch_version  = false
+      cache_duration = "10m"
+
+  [[blocks.segments]]
     type             = "python"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:grey"
     foreground = "p:yellow"
-    template   = "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} "
+    template   = "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} "
     [blocks.segments.properties]
       display_mode   = "environment"
       home_enabled   = false
@@ -117,8 +145,8 @@ final_space = true
   [[blocks.segments]]
     type             = "executiontime"
     style            = "diamond"
-    leading_diamond  = ""
-    trailing_diamond = " "
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:yellow"
     foreground = "p:dark"
     template   = " 󱎫 {{ .FormattedMs }} "

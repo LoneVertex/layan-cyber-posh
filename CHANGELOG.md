@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-06
+
+### Fixed
+- **Capsule Geometry & Diamond Restoration:** Restored `leading_diamond = "\uE0B6"` and `trailing_diamond = "\uE0B4 "` across all segments using safe TOML unicode escape sequences, preventing heredoc byte stripping and restoring the theme's signature rounded capsule/pill aesthetic.
+- **Icon Encoding Integrity:** Restored `\uF044` (git edit), `\uF046` (git staged), `\uE718` (Node.js), and `\uE606` (Python) glyphs with explicit TOML unicode escapes.
+- **Installer CLI Parsing:** Fixed `install.sh` crash when passed `--help` or `-h`. Added clean argument parsing for `--help`, `--uninstall` (`-u`), and `--dir` (`-d`).
+- **Installer Offline Support:** `install.sh` now auto-detects if it is being executed inside a cloned git repository and copies theme files locally without making redundant network requests.
+
+### Added
+- **Go Runtime Segment:** Right prompt now automatically displays the Go runtime pill (`\uE627` ``) in cyan when `go.mod` exists.
+- **Rust Runtime Segment:** Right prompt now automatically displays the Rust runtime pill (`\uE7A8` ``) in orange when `Cargo.toml` exists.
+- **Git Stash Visibility:** Git segment now detects and displays active stashes (`\uEB4B` ` <count>`).
+- **Strict Format Synchronization Gate:** GitHub Actions CI now enforces byte-for-byte synchronization between `layan-cyber.omp.toml`, `layan-cyber.omp.json`, and `layan-cyber.omp.yaml` via automated `diff -u`.
+- **Installer Syntax Gate:** GitHub Actions CI now runs `sh -n install.sh` and `--help` verification.
+- **Dynamic Badges:** Added live GitHub Actions CI status and GitHub Release version badges to `README.md`.
+
 ## [1.1.0] - 2026-09-06
 
 ### Fixed

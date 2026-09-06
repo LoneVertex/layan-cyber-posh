@@ -32,7 +32,8 @@
       "alignment": "left",
       "segments": [
         {
-          "trailing_diamond": " ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
           "template": " {{ if .Icon }}{{ .Icon }}{{ else }}🐧{{ end }} ",
           "foreground": "p:dark",
           "background": "p:purple",
@@ -40,7 +41,8 @@
           "style": "diamond"
         },
         {
-          "trailing_diamond": " ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
           "template": " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}\udb82\udcb9 {{ end }}{{ .UserName }}@{{ .HostName }} ",
           "foreground": "p:dark",
           "type": "session",
@@ -55,7 +57,8 @@
             "max_depth": 3,
             "style": "folder"
           },
-          "trailing_diamond": " ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
           "template": " 📁 {{ .Path }} ",
           "foreground": "p:dark",
           "background": "p:green",
@@ -69,8 +72,9 @@
             "fetch_upstream": false,
             "timeout": 500
           },
-          "trailing_diamond": " ",
-          "template": "  {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
+          "template": " {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} \ueb4b {{ .StashCount }}{{ end }} ",
           "foreground": "p:dark",
           "background": "p:yellow",
           "type": "git",
@@ -98,11 +102,42 @@
             "fetch_package_manager": false,
             "home_enabled": false
           },
-          "trailing_diamond": " ",
-          "template": "  {{ .Full }} ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
+          "template": " \ue718 {{ .Full }} ",
           "foreground": "p:green",
           "background": "p:grey",
           "type": "node",
+          "style": "diamond"
+        },
+        {
+          "options": {
+            "cache_duration": "10m",
+            "display_mode": "files",
+            "fetch_version": false,
+            "home_enabled": false
+          },
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
+          "template": " \ue627 {{ .Full }} ",
+          "foreground": "p:cyan",
+          "background": "p:grey",
+          "type": "go",
+          "style": "diamond"
+        },
+        {
+          "options": {
+            "cache_duration": "10m",
+            "display_mode": "files",
+            "fetch_version": false,
+            "home_enabled": false
+          },
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
+          "template": " \ue7a8 {{ .Full }} ",
+          "foreground": "p:orange",
+          "background": "p:grey",
+          "type": "rust",
           "style": "diamond"
         },
         {
@@ -112,8 +147,9 @@
             "fetch_version": false,
             "home_enabled": false
           },
-          "trailing_diamond": " ",
-          "template": "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
+          "template": " \ue606 {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} ",
           "foreground": "p:yellow",
           "background": "p:grey",
           "type": "python",
@@ -124,7 +160,8 @@
             "style": "austin",
             "threshold": 2000
           },
-          "trailing_diamond": " ",
+          "leading_diamond": "\ue0b6",
+          "trailing_diamond": "\ue0b4 ",
           "template": " \udb84\udfab {{ .FormattedMs }} ",
           "foreground": "p:dark",
           "background": "p:yellow",

@@ -44,18 +44,12 @@ jobs:
           python3 - << 'EOF'
           import urllib.request, json, jsonschema, sys
 
-          # Fetch official Oh My Posh JSON schema
           schema_url = "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json"
           schema = json.loads(urllib.request.urlopen(schema_url).read())
 
-          # Load exported theme JSON
           with open("themes/layan-cyber.omp.json") as f:
               theme = json.load(f)
 
-          # oh-my-posh exposes runtime-only git options (fetch_status, fetch_upstream,
-          # cache_duration, timeout) that are not listed in the published JSON schema
-          # but are accepted and required by the runtime engine. We strip them before
-          # schema validation so the gate tests structural correctness only.
           KNOWN_RUNTIME_PROPS = {"fetch_status", "fetch_upstream", "fetch_stash",
                                   "fetch_worktree", "cache_duration", "timeout"}
           for block in theme.get("blocks", []):
@@ -66,7 +60,7 @@ jobs:
 
           try:
               jsonschema.validate(instance=theme, schema=schema)
-              print("✔  Schema validation passed — 100% compliant with Oh My Posh v3 schema.")
+              print("✔  Schema validation passed — 100% compliant with Oh My Posh v3 specification.")
           except jsonschema.ValidationError as e:
               print(f"✗  Schema validation failed: {e.message}", file=sys.stderr)
               sys.exit(1)
@@ -74,10 +68,15 @@ jobs:
 
       - name: Verify format synchronization
         run: |
-          echo "Checking JSON export round-trip…"
+          echo "Verifying JSON export matches canonical TOML…"
           oh-my-posh config export --config themes/layan-cyber.omp.toml --format json --output /tmp/check.omp.json
-          python3 -m json.tool /tmp/check.omp.json > /dev/null
-          echo "✔  JSON is well-formed."
+          diff -u themes/layan-cyber.omp.json /tmp/check.omp.json
+          echo "✔  JSON format is 100% synchronized."
+
+          echo "Verifying YAML export matches canonical TOML…"
+          oh-my-posh config export --config themes/layan-cyber.omp.toml --format yaml --output /tmp/check.omp.yaml
+          diff -u themes/layan-cyber.omp.yaml /tmp/check.omp.yaml
+          echo "✔  YAML format is 100% synchronized."
 
       - name: Narrow terminal overflow test
         run: |
@@ -101,7 +100,6 @@ jobs:
               ["oh-my-posh", "debug", "--config", "themes/layan-cyber.omp.toml"],
               capture_output=True, text=True
           )
-          # Strip ANSI escape codes, then extract run duration
           clean = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
           match = re.search(r"Run duration:\s*([\d.]+)", clean)
           if match:
@@ -114,3 +112,11 @@ jobs:
           else:
               print("⚠  Could not parse execution time — skipping latency gate.")
           EOF
+
+      - name: Validate installer script
+        run: |
+          echo "Checking install.sh POSIX syntax…"
+          sh -n install.sh
+          echo "Testing install.sh --help…"
+          ./install.sh --help > /dev/null
+          echo "✔  Installer script OK."

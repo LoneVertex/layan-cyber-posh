@@ -1,11 +1,86 @@
 #!/bin/sh
 # install.sh — Layan Cyber Oh My Posh Theme Installer
-# POSIX-compliant. Installs theme for bash, zsh, fish, and pwsh.
+# POSIX-compliant. Installs layan-cyber theme for bash, zsh, fish, and pwsh.
 set -eu
 
-REPO_URL="https://raw.githubusercontent.com/LoneVertex/layan-cyber-posh/main/themes/layan-cyber.omp.toml"
+VERSION="1.2.0"
+REPO_RAW_BASE="https://raw.githubusercontent.com/LoneVertex/layan-cyber-posh/main"
 DEFAULT_DIR="${HOME}/.config/oh-my-posh/themes"
 THEME_FILE="layan-cyber.omp.toml"
+
+show_help() {
+  cat << EOF
+layan-cyber theme installer (v${VERSION})
+Usage: install.sh [OPTIONS] [DESTINATION_DIR]
+
+Options:
+  -h, --help       Show this help message and exit
+  -u, --uninstall  Remove installed layan-cyber theme files
+  -d, --dir DIR    Specify installation directory (default: ~/.config/oh-my-posh/themes)
+
+Examples:
+  # Default installation to ~/.config/oh-my-posh/themes
+  ./install.sh
+
+  # Install to custom directory
+  ./install.sh /custom/path
+
+  # One-line remote installation
+  curl -fsSL ${REPO_RAW_BASE}/install.sh | sh
+
+  # Uninstall
+  ./install.sh --uninstall
+EOF
+}
+
+# ── argument parsing ─────────────────────────────────────────────────────────
+
+INSTALL_DIR="${DEFAULT_DIR}"
+DO_UNINSTALL=0
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    -u|--uninstall)
+      DO_UNINSTALL=1
+      shift
+      ;;
+    -d|--dir)
+      if [ -n "${2:-}" ]; then
+        INSTALL_DIR="$2"
+        shift 2
+      else
+        echo "Error: --dir requires a directory path" >&2
+        exit 1
+      fi
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      echo "Use --help for usage information." >&2
+      exit 1
+      ;;
+    *)
+      INSTALL_DIR="$1"
+      shift
+      ;;
+  esac
+done
+
+DEST="${INSTALL_DIR}/${THEME_FILE}"
+
+# ── uninstall handling ───────────────────────────────────────────────────────
+
+if [ "${DO_UNINSTALL}" -eq 1 ]; then
+  echo "🗑  Uninstalling layan-cyber theme from ${INSTALL_DIR}…"
+  rm -f "${INSTALL_DIR}/layan-cyber.omp.toml" \
+        "${INSTALL_DIR}/layan-cyber.omp.json" \
+        "${INSTALL_DIR}/layan-cyber.omp.yaml"
+  echo "✔  Uninstallation complete."
+  exit 0
+fi
 
 # ── preflight ────────────────────────────────────────────────────────────────
 
@@ -21,22 +96,31 @@ echo "✔  oh-my-posh ${OMP_VER} detected."
 
 # ── destination ──────────────────────────────────────────────────────────────
 
-INSTALL_DIR="${1:-${DEFAULT_DIR}}"
 mkdir -p "${INSTALL_DIR}"
 
-DEST="${INSTALL_DIR}/${THEME_FILE}"
+# ── source resolution (local clone vs remote download) ───────────────────────
 
-# ── download ─────────────────────────────────────────────────────────────────
+SCRIPT_DIR=""
+if [ -n "${0:-}" ] && [ -f "$0" ]; then
+  SCRIPT_DIR=$(cd "$(dirname "$0")" 2>/dev/null && pwd || true)
+fi
 
-echo "⬇  Downloading layan-cyber theme…"
+LOCAL_THEME="${SCRIPT_DIR}/themes/${THEME_FILE}"
 
-if command -v curl >/dev/null 2>&1; then
-  curl -fsSL "${REPO_URL}" -o "${DEST}"
-elif command -v wget >/dev/null 2>&1; then
-  wget -qO "${DEST}" "${REPO_URL}"
+if [ -n "${SCRIPT_DIR}" ] && [ -f "${LOCAL_THEME}" ]; then
+  echo "📂 Installing from local repository: ${SCRIPT_DIR}…"
+  cp -f "${SCRIPT_DIR}/themes/layan-cyber.omp."* "${INSTALL_DIR}/"
 else
-  echo "✗  Neither curl nor wget found. Cannot download theme." >&2
-  exit 1
+  echo "⬇  Downloading layan-cyber theme from GitHub…"
+  THEME_URL="${REPO_RAW_BASE}/themes/${THEME_FILE}"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "${THEME_URL}" -o "${DEST}"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO "${DEST}" "${THEME_URL}"
+  else
+    echo "✗  Neither curl nor wget found. Cannot download theme." >&2
+    exit 1
+  fi
 fi
 
 echo "✔  Theme installed to: ${DEST}"
