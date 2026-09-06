@@ -3,16 +3,16 @@ version = 3
 final_space = true
 
 [palette]
-  dark = "#282a36"
-  light = "#f8f8f2"
-  red = "#ff5555"
+  dark   = "#282a36"
+  light  = "#f8f8f2"
+  red    = "#ff5555"
   orange = "#ffb86c"
   yellow = "#f1fa8c"
-  green = "#50fa7b"
-  cyan = "#8be9fd"
+  green  = "#50fa7b"
+  cyan   = "#8be9fd"
   purple = "#bd93f9"
-  pink = "#ff79c6"
-  grey = "#44475a"
+  pink   = "#ff79c6"
+  grey   = "#44475a"
 
 [transient_prompt]
   background = "transparent"
@@ -23,127 +23,126 @@ final_space = true
   template = " ❯ "
 
 [[blocks]]
-  type = "prompt"
+  type      = "prompt"
   alignment = "left"
-  newline = true
+  newline   = true
 
   [[blocks.segments]]
-    type = "os"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
-    background = "p:purple"
-    foreground = "p:dark"
-    template = " {{ if .Icon }}{{ .Icon }}{{ else }}🐧{{ end }} "
+    type             = "os"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
+    background       = "p:purple"
+    foreground       = "p:dark"
+    template         = " {{ if .Icon }}{{ .Icon }}{{ else }}🐧{{ end }} "
 
   [[blocks.segments]]
-    type = "session"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "session"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background_templates = [
       "{{ if .Root }}p:red{{ end }}",
       "p:cyan"
     ]
     foreground = "p:dark"
-    template = " {{ if .Root }}⚡ {{ end }}{{ .UserName }}@{{ .HostName }} "
+    template   = " {{ if .Root }}⚡ {{ end }}{{ if .SSHSession }}󰢹 {{ end }}{{ .UserName }}@{{ .HostName }} "
 
   [[blocks.segments]]
-    type = "path"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "path"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:green"
     foreground = "p:dark"
-    template = " 📁 {{ .Path }} "
+    template   = " 📁 {{ .Path }} "
     [blocks.segments.properties]
-      style = "folder"
+      style     = "folder"
       max_depth = 3
 
   [[blocks.segments]]
-    type = "git"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "git"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:yellow"
     background_templates = [
+      "{{ if gt .Working.Unmerged 0 }}p:red{{ end }}",
       "{{ if and (gt .Ahead 0) (gt .Behind 0) }}p:red{{ end }}",
-      "{{ if gt .Ahead 0 }}p:purple{{ end }}",
+      "{{ if or (.Working.Changed) (.Staging.Changed) }}p:orange{{ end }}",
       "{{ if gt .Behind 0 }}p:orange{{ end }}",
-      "{{ if or (.Working.Changed) (.Staging.Changed) }}p:orange{{ end }}"
+      "{{ if gt .Ahead 0 }}p:purple{{ end }}"
     ]
     foreground = "p:dark"
-    template = "  {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} "
+    template   = "  {{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }} "
     [blocks.segments.properties]
-      fetch_status = true
+      fetch_status   = true
       fetch_upstream = false
-      fetch_stash = false
-      fetch_worktree = false
-      ignore_submodules = ["all"]
       cache_duration = "5m"
-      timeout = 500
+      timeout        = 500
 
 [[blocks]]
-  type = "prompt"
+  type      = "prompt"
   alignment = "right"
+  overflow  = "hide"
 
   [[blocks.segments]]
-    type = "node"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "node"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:grey"
     foreground = "p:green"
-    template = "  {{ .Full }} "
+    template   = "  {{ .Full }} "
     [blocks.segments.properties]
-      display_mode = "files"
-      home_enabled = false
+      display_mode          = "files"
+      home_enabled          = false
       fetch_package_manager = false
-      cache_duration = "10m"
+      cache_duration        = "10m"
 
   [[blocks.segments]]
-    type = "python"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "python"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:grey"
     foreground = "p:yellow"
-    template = "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} "
+    template   = "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Venv }}{{ end }} "
     [blocks.segments.properties]
-      display_mode = "environment"
-      home_enabled = false
-      fetch_version = true
+      display_mode   = "environment"
+      home_enabled   = false
+      fetch_version  = false
       cache_duration = "10m"
 
   [[blocks.segments]]
-    type = "executiontime"
-    style = "diamond"
-    leading_diamond = ""
-    trailing_diamond = " "
+    type             = "executiontime"
+    style            = "diamond"
+    leading_diamond  = ""
+    trailing_diamond = " "
     background = "p:yellow"
     foreground = "p:dark"
-    template = " 󱎫 {{ .FormattedMs }} "
+    template   = " 󱎫 {{ .FormattedMs }} "
     [blocks.segments.properties]
       threshold = 2000
-      style = "human"
+      style     = "austin"
 
 [[blocks]]
-  type = "prompt"
+  type      = "prompt"
   alignment = "left"
-  newline = true
+  newline   = true
 
   [[blocks.segments]]
-    type = "exit"
-    style = "plain"
+    type       = "status"
+    style      = "plain"
     foreground = "p:red"
-    template = "{{ if gt .Code 0 }} ✗ {{ .Code }}{{ end }}"
+    template   = "{{ if gt .Code 0 }} ✗ {{ .Code }}{{ end }}"
 
   [[blocks.segments]]
-    type = "text"
-    style = "plain"
+    type       = "text"
+    style      = "plain"
     background = "transparent"
     foreground_templates = [
       "{{ if gt .Code 0 }}p:red{{ end }}",
       "p:green"
     ]
-    template = " ❯ "
+    template = " ❯"

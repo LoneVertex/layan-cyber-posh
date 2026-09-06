@@ -1,40 +1,61 @@
-#!/usr/bin/env sh
-set -e
+#!/bin/sh
+# install.sh — Layan Cyber Oh My Posh Theme Installer
+# POSIX-compliant. Installs theme for bash, zsh, fish, and pwsh.
+set -eu
 
-THEME_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/oh-my-posh/themes"
-RAW_BASE_URL="https://raw.githubusercontent.com/LoneVertex/layan-cyber-posh/main/themes"
+REPO_URL="https://raw.githubusercontent.com/LoneVertex/layan-cyber-posh/main/themes/layan-cyber.omp.toml"
+DEFAULT_DIR="${HOME}/.config/oh-my-posh/themes"
+THEME_FILE="layan-cyber.omp.toml"
 
-printf "\033[1;36m==> Installing layan-cyber Oh My Posh theme...\033[0m\n"
-mkdir -p "$THEME_DIR"
+# ── preflight ────────────────────────────────────────────────────────────────
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo "")"
-
-if [ -f "$SCRIPT_DIR/themes/layan-cyber.omp.toml" ]; then
-    printf "Copying local theme files to %s...\n" "$THEME_DIR"
-    cp -f "$SCRIPT_DIR"/themes/layan-cyber.omp.* "$THEME_DIR/"
-else
-    printf "Downloading theme files to %s...\n" "$THEME_DIR"
-    if command -v curl >/dev/null 2>&1; then
-        curl -fsSL "$RAW_BASE_URL/layan-cyber.omp.toml" -o "$THEME_DIR/layan-cyber.omp.toml"
-        curl -fsSL "$RAW_BASE_URL/layan-cyber.omp.json" -o "$THEME_DIR/layan-cyber.omp.json"
-        curl -fsSL "$RAW_BASE_URL/layan-cyber.omp.yaml" -o "$THEME_DIR/layan-cyber.omp.yaml"
-    elif command -v wget >/dev/null 2>&1; then
-        wget -q "$RAW_BASE_URL/layan-cyber.omp.toml" -O "$THEME_DIR/layan-cyber.omp.toml"
-        wget -q "$RAW_BASE_URL/layan-cyber.omp.json" -O "$THEME_DIR/layan-cyber.omp.json"
-        wget -q "$RAW_BASE_URL/layan-cyber.omp.yaml" -O "$THEME_DIR/layan-cyber.omp.yaml"
-    else
-        printf "\033[1;31mError: curl or wget is required to download theme files.\033[0m\n" >&2
-        exit 1
-    fi
+if ! command -v oh-my-posh >/dev/null 2>&1; then
+  echo "⚠  oh-my-posh not found in PATH." >&2
+  echo "   Install it first: https://ohmyposh.dev/docs/installation/linux" >&2
+  echo "   Then re-run this script." >&2
+  exit 1
 fi
 
-printf "\033[1;32m==> Successfully installed layan-cyber to %s!\033[0m\n\n" "$THEME_DIR"
-printf "Add one of the following lines to your shell configuration:\n\n"
-printf "\033[1;33mBash (~/.bashrc):\033[0m\n"
-printf '  eval "$(oh-my-posh init bash --config %s/layan-cyber.omp.toml)"\n\n' "$THEME_DIR"
-printf "\033[1;33mZsh (~/.zshrc):\033[0m\n"
-printf '  eval "$(oh-my-posh init zsh --config %s/layan-cyber.omp.toml)"\n\n' "$THEME_DIR"
-printf "\033[1;33mFish (~/.config/fish/config.fish):\033[0m\n"
-printf '  oh-my-posh init fish --config %s/layan-cyber.omp.toml | source\n\n' "$THEME_DIR"
-printf "\033[1;33mPowerShell ($PROFILE):\033[0m\n"
-printf '  oh-my-posh init pwsh --config "%s/layan-cyber.omp.toml" | Invoke-Expression\n\n' "$THEME_DIR"
+OMP_VER=$(oh-my-posh version 2>/dev/null || echo "unknown")
+echo "✔  oh-my-posh ${OMP_VER} detected."
+
+# ── destination ──────────────────────────────────────────────────────────────
+
+INSTALL_DIR="${1:-${DEFAULT_DIR}}"
+mkdir -p "${INSTALL_DIR}"
+
+DEST="${INSTALL_DIR}/${THEME_FILE}"
+
+# ── download ─────────────────────────────────────────────────────────────────
+
+echo "⬇  Downloading layan-cyber theme…"
+
+if command -v curl >/dev/null 2>&1; then
+  curl -fsSL "${REPO_URL}" -o "${DEST}"
+elif command -v wget >/dev/null 2>&1; then
+  wget -qO "${DEST}" "${REPO_URL}"
+else
+  echo "✗  Neither curl nor wget found. Cannot download theme." >&2
+  exit 1
+fi
+
+echo "✔  Theme installed to: ${DEST}"
+
+# ── shell integration hints ──────────────────────────────────────────────────
+
+echo ""
+echo "── Add to your shell config ────────────────────────────────────────────"
+echo ""
+echo "  Bash   (~/.bashrc):"
+printf '  eval "$(oh-my-posh init bash --config \"%s\")"\n' "${DEST}"
+echo ""
+echo "  Zsh    (~/.zshrc):"
+printf '  eval "$(oh-my-posh init zsh --config \"%s\")"\n' "${DEST}"
+echo ""
+echo "  Fish   (~/.config/fish/config.fish):"
+printf '  oh-my-posh init fish --config "%s" | source\n' "${DEST}"
+echo ""
+echo "  PowerShell (~/.config/powershell/Microsoft.PowerShell_profile.ps1):"
+printf '  oh-my-posh init pwsh --config "%s" | Invoke-Expression\n' "${DEST}"
+echo ""
+echo "── Reload your shell or run: source ~/.bashrc ───────────────────────────"

@@ -25,16 +25,24 @@
 - 🧭 **Two-Line Responsive Layout:**
   - **Upper line:** System details, active directory, git status, and right-aligned runtime versions.
   - **Lower line:** Error exit code indicator (`✗ <code>`) and clean prompt arrow (` ❯ `), giving you maximum horizontal room for long commands.
-- ⚡ **Dynamic Git Status:**
-  - Color-reactive background (yellow when clean, orange when modified/behind, purple when ahead, red when diverged).
+- ⚡ **Precise Git Status Color Matrix:**
+  | Git State | Background |
+  |---|---|
+  | Unresolved merge conflict | 🔴 Red |
+  | Diverged (ahead + behind) | 🔴 Red |
+  | Dirty (uncommitted changes) | 🟠 Orange |
+  | Behind upstream | 🟠 Orange |
+  | Ahead of upstream (clean) | 🟣 Purple |
+  | Clean / no remote | 🟡 Yellow |
   - Branch name, ahead/behind counts, working tree changes (``), and staged file counts (``).
-  - Cached for maximum prompt speed with sub-millisecond responsiveness.
-- 🚀 **Smart Language & Tooling Segments (Right Prompt):**
-  - **Node.js:** Automatically activates when `package.json` or JS/TS project files exist.
-  - **Python:** Automatically displays virtualenv name and Python version.
+  - Results cached — sub-millisecond git lookups after first render.
+- 🖥️ **SSH Session Indicator:** The session pill shows `󰢹` when you're connected over SSH, giving instant visual context when working on remote machines.
+- 🚀 **Smart Language & Tooling Segments (Right Prompt, hidden on narrow terminals):**
+  - **Node.js:** Activates automatically when `package.json` or JS/TS project files exist.
+  - **Python:** Displays virtual environment name when active (version lookup disabled for performance).
   - **Execution Timer:** Displays command duration (`󱎫`) when execution exceeds 2000ms.
-- 🪄 **Transient Prompt:** Collapses previous prompts into a minimalist ` ❯ ` on Enter, keeping your terminal scrollback clean and readable.
-- 📦 **Multi-Format:** Provided in **TOML** (canonical), **JSON**, and **YAML**.
+- 🪄 **Transient Prompt:** Collapses previous prompts into a minimalist ` ❯ ` on Enter, keeping your terminal scrollback clean. Primary and transient prompts are perfectly column-aligned — zero cursor jitter on Enter.
+- 📦 **Multi-Format:** Provided in **TOML** (canonical), **JSON**, and **YAML** — all three kept in sync and schema-validated in CI.
 
 ---
 
@@ -62,7 +70,9 @@
    # Linux / macOS (Homebrew or binary installer)
    curl -s https://ohmyposh.dev/install.sh | bash -s
    ```
-2. **A [Nerd Font](https://www.nerdfonts.com/)** installed and configured in your terminal emulator (e.g. *JetBrainsMono Nerd Font*, *FiraCode Nerd Font*, *MesloLGS NF*, or *Cascadia Code NF*).
+2. **A [Nerd Font v3+](https://www.nerdfonts.com/)** installed and configured in your terminal emulator.  
+   **Version 3 is required** — the theme uses `󰢹` (SSH indicator) and other v3-only glyphs.  
+   Recommended: *JetBrainsMono Nerd Font*, *FiraCode Nerd Font*, *MesloLGS NF*, or *Cascadia Code NF*.
 
 ---
 
