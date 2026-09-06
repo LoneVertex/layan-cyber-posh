@@ -22,7 +22,7 @@
 
 ## ✨ Features
 
-- 💊 **Floating Capsule Geometry:** Clean rounded Powerline pill caps (`` / ``) creating separate floating segments rather than connected sharp chevrons.
+- 💊 **Floating Capsule Geometry:** Clean rounded Powerline pill caps (`\uE0B6` / `\uE0B4`) creating separate floating segments rather than connected sharp chevrons.
 - 🎨 **Cyberpunk × Dracula Palette:** Carefully balanced palette using deep slate charcoal (`#282a36`), off-white (`#f8f8f2`), and neon pastels (cyan, purple, lime green, yellow, orange, coral red). Fully WCAG AA contrast compliant.
 - 🧭 **Two-Line Responsive Layout:**
   - **Upper line:** System details, active directory, git status, and right-aligned runtime versions.
@@ -36,17 +36,18 @@
   | Behind upstream | 🟠 Orange |
   | Ahead of upstream (clean) | 🟣 Purple |
   | Clean / no remote | 🟡 Yellow |
-  - Branch name, ahead/behind counts, working tree changes (``), staged file counts (``), and stash counter (``).
+  - Branch name, ahead/behind counts (`↑` / `↓`), working tree changes (`✎`), staged file counts (`✔`), and stash counter (`⚑`).
   - Results cached — sub-millisecond git lookups after first render.
-- 🖥️ **SSH Session Indicator:** The session pill shows `󰢹` when connected over SSH, giving instant visual context on remote machines.
+- 🖥️ **SSH Session Indicator:** The session pill automatically displays an SSH indicator icon (💻 `SSH`) when connected over SSH, giving instant visual context on remote machines.
 - 🚀 **Polyglot Developer Tooling (Right Prompt, hidden on narrow terminals):**
-  - **Node.js (``):** Activates automatically when `package.json` or JS/TS files exist.
-  - **Go (``):** Activates automatically when `go.mod` exists.
-  - **Rust (``):** Activates automatically when `Cargo.toml` exists.
-  - **Python (``):** Displays virtual environment name when active.
-  - **Execution Timer (`󱎫`):** Displays command duration when execution exceeds 2000ms.
+  - **Node.js** (🟢 Node): Activates automatically when `package.json` or JS/TS files exist.
+  - **Go** (🩵 Go): Activates automatically when `go.mod` exists.
+  - **Rust** (🦀 Rust): Activates automatically when `Cargo.toml` exists.
+  - **Python** (🐍 Python): Displays virtual environment name when active.
+  - **Execution Timer** (⏱️ Timer): Displays command duration when execution exceeds 2000ms.
+  - *(All runtime capsules render with their respective Nerd Font icons in dark grey diamond pills)*
 - 🪄 **Transient Prompt:** Collapses previous prompts into a minimalist ` ❯ ` on Enter, keeping terminal scrollback clean. Primary line 2 and transient prompt are perfectly column-aligned — zero cursor jitter.
-- 📦 **Multi-Format:** Provided in **TOML** (canonical), **JSON**, and **YAML** — all three kept 100% in lockstep and schema-validated in CI.
+- 📦 **Multi-Format:** Provided in **JSON** (canonical), **TOML**, and **YAML** — all three kept 100% in lockstep and schema-validated in CI.
 
 ---
 
@@ -75,7 +76,7 @@
    curl -s https://ohmyposh.dev/install.sh | bash -s
    ```
 2. **A [Nerd Font v3+](https://www.nerdfonts.com/)** installed and configured in your terminal emulator.  
-   **Version 3 is required** — the theme uses `󰢹` (SSH indicator), `` (stash), and modern runtime glyphs.  
+   **Version 3 is required** — the theme utilizes modern Nerd Font v3 glyphs for the SSH session indicator, Git stash, and runtime badges.  
    Recommended: *JetBrainsMono Nerd Font*, *FiraCode Nerd Font*, *MesloLGS NF*, or *Cascadia Code NF*.
 
 ---
