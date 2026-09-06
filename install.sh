@@ -213,10 +213,12 @@ echo ""
 echo "── Add to your shell config ────────────────────────────────────────────"
 echo ""
 echo "  Bash   (~/.bashrc):"
-printf '  eval "$(oh-my-posh init bash --config "%s")"\n' "${DEST}"
+# shellcheck disable=SC2016
+  printf '  eval "$(oh-my-posh init bash --config "%s")"\n' "${DEST}"
 echo ""
 echo "  Zsh    (~/.zshrc):"
-printf '  eval "$(oh-my-posh init zsh --config "%s")"\n' "${DEST}"
+# shellcheck disable=SC2016
+  printf '  eval "$(oh-my-posh init zsh --config "%s")"\n' "${DEST}"
 echo ""
 echo "  Fish   (~/.config/fish/config.fish):"
 printf '  oh-my-posh init fish --config "%s" | source\n' "${DEST}"
@@ -225,7 +227,8 @@ echo "  PowerShell (~/.config/powershell/Microsoft.PowerShell_profile.ps1):"
 printf '  oh-my-posh init pwsh --config "%s" | Invoke-Expression\n' "${DEST}"
 echo ""
 echo "  Nushell (config.nu / env.nu):"
-printf '  # In ~/.config/nushell/config.nu (or $nu.config-path):\n'
+# shellcheck disable=SC2016
+  printf '  # In ~/.config/nushell/config.nu (or $nu.config-path):\n'
 printf '  oh-my-posh init nu --config "%s" --print | save -f ~/.cache/oh-my-posh/init.nu\n' "${DEST}"
 printf '  source ~/.cache/oh-my-posh/init.nu\n'
 echo ""
